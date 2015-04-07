@@ -1,24 +1,23 @@
 {
-  "name": "node-stack",
-  "version": "0.0.1",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/noodny/node-stack.git"
-  },
-  "author": "Krzysztof Jakubik",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/noodny/node-stack/issues"
-  },
-  "homepage": "https://github.com/noodny/node-stack",
-  "dependencies": {
-    "bouncy": "^3.2.2",
-    "ecstatic": "^0.7.2",
-    "pmx": "^0.3.5"
-  }
+    "name": "node-stack",
+    "version": "0.0.1",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/noodny/node-stack.git"
+    },
+    "author": "Krzysztof Jakubik",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/noodny/node-stack/issues"
+    },
+    "homepage": "https://github.com/noodny/node-stack",
+    "dependencies": {
+        "bouncy": "^3.2.2",
+        "ecstatic": "^0.7.2"
+    }
 }

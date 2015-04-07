@@ -1,5 +1,4 @@
 var PROXY_PORT = 80,
-    pmx = require('pmx').init(),
     bouncy = require('bouncy'),
     http = require('http'),
     ecstatic = require('ecstatic');
