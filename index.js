@@ -5,9 +5,7 @@ var PROXY_PORT = 80,
     EventEmitter = require('events').EventEmitter;
 
 var Stack = function(config) {
-    config = this.defaults(config);
-    this.startStatic(config.static);
-    this.startProxy(config.proxy, config.static.port);
+    this.config = this.defaults(config);
 };
 
 Stack.prototype = Object.create(EventEmitter.prototype);
@@ -16,7 +14,14 @@ Stack.prototype.defaults = function(config) {
     return config;
 };
 
-Stack.prototype.startStatic = function(config) {
+Stack.prototype.initialize = function() {
+    this.startStatic();
+    this.startProxy();
+};
+
+Stack.prototype.startStatic = function() {
+    var config = this.config.static;
+
     this.emit('log', 'Starting up http server, serving ' + config.root + ' on port: ' + config.port);
 
     var httpListener = ecstatic({
@@ -62,7 +67,10 @@ Stack.prototype.startStatic = function(config) {
     }.bind(this)).listen(config.port);
 };
 
-Stack.prototype.startProxy = function(config, staticPort) {
+Stack.prototype.startProxy = function() {
+    var config = this.config.proxy,
+        staticPort = this.config.static.port;
+
     this.emit('log', 'Starting up proxy server on port: ' + config.port || PROXY_PORT);
 
     var proxy = bouncy(function(req, res, bounce) {
