@@ -40,9 +40,9 @@ Stack.prototype.startStatic = function() {
     http.createServer(function(req, res) {
         if(!req.headers.host) {
             var headers = '';
-            req.headers.forEach(function(value, key) {
-                headers += '\t' + key + ': ' + value + ';\n';
-            });
+            for(var key in req.headers) {
+                headers += '\t' + key + ': ' + req.headers[key] + ';\n';
+            }
             this.emit('error', 'Missing host header for request url: ' + req.url + ' headers:\n' + headers);
         }
 
