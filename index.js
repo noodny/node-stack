@@ -59,7 +59,7 @@ Stack.prototype.startStatic = function() {
             }
         }
 
-        this.emit('log', 'Request url: ' + host + req.url + ' - serving: ' + config.root + dir + req.url);
+        this.emit('log', 'Request url: ' + host + req.url + ' - serving static: ' + config.root + dir + req.url);
 
         req.url = dir + req.url;
 
@@ -81,7 +81,6 @@ Stack.prototype.startProxy = function() {
             this.emit('log', 'Request url: ' + host + req.url + ' - proxy to port: ' + port);
             bounce(port);
         } else {
-            this.emit('log', 'Request url: ' + host + req.url + ' - proxy to static server');
             bounce(staticPort);
         }
     }.bind(this));
