@@ -38,15 +38,17 @@ Stack.prototype.startStatic = function() {
     });
 
     http.createServer(function(req, res) {
+        var fragments, dir, host = '';
+
         if(!req.headers.host) {
             var headers = '';
             for(var key in req.headers) {
                 headers += '\t' + key + ': ' + req.headers[key] + ';\n';
             }
             this.emit('error', 'Missing host header for request url: ' + req.url + ' headers:\n' + headers);
+        } else {
+            host = req.headers.host.replace('www.', '');
         }
-
-        var fragments, dir, host = req.headers.host.replace('www.', '');
 
         if(typeof config.routes[host] !== 'undefined') {
             dir = config.routes[host];
