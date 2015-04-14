@@ -22,25 +22,27 @@ Stack.prototype.initialize = function() {
 };
 
 Stack.prototype.startStatic = function() {
-    var config = this.config.static;
+    var config = this.config.static,
+        stack = this,
+        server;
 
     this.emit('log', 'Starting up http server, serving ' + config.root + ' on port: ' + config.port);
 
-    var server = new static.Server(config.root, {
+    server = new static.Server(config.root, {
         cache: 3600,
         serverInfo: pkg.name + '/' + pkg.version,
         gzip: true
     });
 
-    http.createServer(function (req, res) {
+    http.createServer(function(req, res) {
         var fragments, dir, host = '';
 
         if(!req.headers.host) {
             var headers = '';
-            for(var key in req.headers) {
+            for (var key in req.headers) {
                 headers += '\t' + key + ': ' + req.headers[key] + ';\n';
             }
-            this.emit('error', 'Missing host header for request url: ' + req.url + ' headers:\n' + headers);
+            stack.emit('error', 'Missing host header for request url: ' + req.url + ' headers:\n' + headers);
         } else {
             host = req.headers.host.replace('www.', '');
         }
@@ -58,17 +60,17 @@ Stack.prototype.startStatic = function() {
 
         req.url = dir + req.url;
 
-        req.addListener('end', function () {
-            server.serve(req, res, function (err, result) {
-                if (err) {
-                    this.emit('log', 'Request url: ' + host + req.url + ' - serving static: ' + config.root + dir + req.url);
+        req.addListener('end', function() {
+            server.serve(req, res, function(err, result) {
+                if(err) {
+                    stack.emit('error', '[' + err.status + '] Request url: ' + host + req.url);
 
                     if(err.status === 404) {
                         var errorPage = dir.length ? dir + '/404.html' : '/404.html';
                         try {
                             fs.openSync(config.root + errorPage, 'r');
                             server.serveFile(errorPage, 404, {}, req, res);
-                        } catch(e) {
+                        } catch (e) {
                             res.writeHead(err.status, err.headers);
                             res.end();
                         }
@@ -77,11 +79,11 @@ Stack.prototype.startStatic = function() {
                         res.end();
                     }
                 } else {
-                    this.emit('log', 'Request url: ' + host + req.url + ' - serving static: ' + config.root + dir + req.url);
+                    stack.emit('log', 'Request url: ' + host + req.url + ' - serving static: ' + config.root + dir + req.url);
                 }
-            }.bind(this));
-        }.bind(this)).resume();
-    }.bind(this)).listen(config.port);
+            });
+        }).resume();
+    }).listen(config.port);
 };
 
 Stack.prototype.startProxy = function() {
