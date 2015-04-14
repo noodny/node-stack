@@ -35,7 +35,7 @@ Stack.prototype.startStatic = function() {
     });
 
     http.createServer(function(req, res) {
-        var fragments, dir, host = '';
+        var fragments, dir, host = '', initialUrl = req.url;
 
         if(!req.headers.host) {
             var headers = '';
@@ -63,7 +63,7 @@ Stack.prototype.startStatic = function() {
         req.addListener('end', function() {
             server.serve(req, res, function(err, result) {
                 if(err) {
-                    stack.emit('error', '[' + err.status + '] Request url: ' + host + req.url);
+                    stack.emit('error', '[' + err.status + '] Request url: ' + host + initialUrl);
 
                     if(err.status === 404) {
                         var errorPage = dir.length ? dir + '/404.html' : '/404.html';
@@ -79,7 +79,7 @@ Stack.prototype.startStatic = function() {
                         res.end();
                     }
                 } else {
-                    stack.emit('log', 'Request url: ' + host + req.url + ' - serving static: ' + config.root + dir + req.url);
+                    stack.emit('log', 'Request url: ' + host + initialUrl + ' - serving static: ' + config.root + dir + initialUrl);
                 }
             });
         }).resume();
