@@ -80,7 +80,7 @@ Stack.prototype.startStatic = function() {
                     this.emit('log', 'Request url: ' + host + req.url + ' - serving static: ' + config.root + dir + req.url);
                 }
             }.bind(this));
-        }).resume();
+        }.bind(this)).resume();
     }).listen(config.port);
 };
 
