@@ -1,8 +1,10 @@
 var PROXY_PORT = 80,
     bouncy = require('bouncy'),
     http = require('http'),
-    ecstatic = require('ecstatic'),
-    EventEmitter = require('events').EventEmitter;
+    static = require('node-static'),
+    EventEmitter = require('events').EventEmitter,
+    pkg = require('./package.json'),
+    fs = require('fs');
 
 var Stack = function(config) {
     this.config = this.defaults(config);
@@ -24,20 +26,13 @@ Stack.prototype.startStatic = function() {
 
     this.emit('log', 'Starting up http server, serving ' + config.root + ' on port: ' + config.port);
 
-    var httpListener = ecstatic({
-        root: config.root,
-        baseDir: '/',
-        cache: 31536000,
-        showDir: false,
-        autoIndex: true,
-        humanReadable: true,
-        si: false,
-        defaultExt: 'html',
-        gzip: true,
-        handleError: true
+    var server = new static.Server(config.root, {
+        cache: 3600,
+        serverInfo: pkg.name + '/' + pkg.version,
+        gzip: true
     });
 
-    http.createServer(function(req, res) {
+    http.createServer(function (req, res) {
         var fragments, dir, host = '';
 
         if(!req.headers.host) {
@@ -61,12 +56,32 @@ Stack.prototype.startStatic = function() {
             }
         }
 
-        this.emit('log', 'Request url: ' + host + req.url + ' - serving static: ' + config.root + dir + req.url);
-
         req.url = dir + req.url;
 
-        return httpListener(req, res);
-    }.bind(this)).listen(config.port);
+        req.addListener('end', function () {
+            server.serve(req, res, function (err, result) {
+                if (err) {
+                    this.emit('log', 'Request url: ' + host + req.url + ' - serving static: ' + config.root + dir + req.url);
+
+                    if(err.status === 404) {
+                        var errorPage = dir.length ? dir + '/404.html' : '/404.html';
+                        try {
+                            fs.openSync(config.root + errorPage, 'r');
+                            server.serveFile(errorPage, 404, {}, req, res);
+                        } catch(e) {
+                            res.writeHead(err.status, err.headers);
+                            res.end();
+                        }
+                    } else {
+                        res.writeHead(err.status, err.headers);
+                        res.end();
+                    }
+                } else {
+                    this.emit('log', 'Request url: ' + host + req.url + ' - serving static: ' + config.root + dir + req.url);
+                }
+            });
+        }).resume();
+    }).listen(config.port);
 };
 
 Stack.prototype.startProxy = function() {
