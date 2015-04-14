@@ -81,7 +81,7 @@ Stack.prototype.startStatic = function() {
                 }
             }.bind(this));
         }.bind(this)).resume();
-    }).listen(config.port);
+    }.bind(this)).listen(config.port);
 };
 
 Stack.prototype.startProxy = function() {
