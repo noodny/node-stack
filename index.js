@@ -79,7 +79,7 @@ Stack.prototype.startStatic = function() {
                 } else {
                     this.emit('log', 'Request url: ' + host + req.url + ' - serving static: ' + config.root + dir + req.url);
                 }
-            });
+            }.bind(this));
         }).resume();
     }).listen(config.port);
 };
